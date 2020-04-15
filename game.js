@@ -135,7 +135,7 @@ function HandleKeyPress(key) {
             direction = DIRECTION.LEFT;
             /* check to see if tetromino hits wall,
              else: delete and draw at new position*/
-            if (!hittingTheWall()) {
+            if (!hittingTheWall() && !checkForHorizontalCollision()) {
                 DeleteTetromino();
                 startX--;
                 // Draw new tetromino
@@ -145,7 +145,7 @@ function HandleKeyPress(key) {
         } else if (key.keyCode === 68) {
             // D key pressed - move right
             direction = DIRECTION.RIGHT;
-            if (!hittingTheWall()) {
+            if (!hittingTheWall() && !checkForHorizontalCollision()) {
                 DeleteTetromino();
                 startX++;
                 DrawTetromino();
@@ -224,6 +224,80 @@ function hittingTheWall() {
     return false;
 }
 
+function CheckForVerticalCollision() {
+    // Create copy of active tetromino
+    let tetrominoCopy = activeTetro;
+    let collision = false;
+    for (let i = 0; i < tetrominoCopy.length; i++) {
+        let square = tetrominoCopy[i];
+        let x = square[0] + startX;
+        let y = square[1] + startY;
+        if (direction === DIRECTION.DOWN) {
+            y++
+        }
+        // Check for collision
+        if (gameBoardArray[x][y + 1] === 1) {
+            if (typeof stoppedShapeArray[x][y + 1] === 'string') {
+                DeleteTetromino();
+                startY++;
+                DrawTetromino();
+                collision = true;
+                break;
+            }
+            if (y >= 20) {
+                collision = true;
+                break;
+            }
+        }
+        // Check if collision happens at spawntime - Game over
+        if (collision) {
+            if (startY <= 2) {
+                winOrLose = "Game Over";
+                ctx.fillStyle = 'white';
+                ctx.fillRect(310, 242, 140, 30);
+                ctx.fillStyle = 'black';
+                ctx.fillText(winOrLose, 310, 261);
 
+            } else {
+                // Put tetromino ontop of collision
+                for (let i = 0; i < tetrominoCopy.length; i++) {
+                    let square = tetrominoCopy[i];
+                    let x = square[0] + startX;
+                    let y = square[1] + startY;
+                    stoppedShapeArray[x][y] = activeTetroColor;
+                }
+                // Spawn new tetromino - game continues
+                CheckForCompletedRows();
+                CreateTetromino();
+                direction = DIRECTION.IDLE;
+                startX = 4;
+                startY = 0;
+                DrawTetromino();
+            }
+        }
+    }
+}
 
+function checkForHorizontalCollision() {
+    // Create copy of tetromino 
+    let tetrominoCopy = activeTetro;
+    let collision = false;
+    for (let i = 0; i < tetrominoCopy.length; i++) {
+        let square = tetrominoCopy[i];
+        let x = square[0] + startX;
+        let y = square[1] + startY;
+
+        if (direction === DIRECTION.LEFT) {
+            x--;
+        } else if (direction === DIRECTION.RIGHT) {
+            x++;
+        }
+        var stoppedShapeVal = stoppedShapeArray[x][y];
+        if (typeof stoppedShapeVal === 'string') {
+            collision = true;
+            break;
+        }
+    }
+    return collision;
+}
 
