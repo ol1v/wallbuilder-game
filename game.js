@@ -300,4 +300,73 @@ function checkForHorizontalCollision() {
     }
     return collision;
 }
+// Check for completed rows
+function CheckForCompletedRows() {
+    let rowsToDelete = 0;
+    let startOfDeletion = 0;
+    // Check Y values
+    for (let y = 0; y < gBArrayHeight; y++) {
+        let completed = true;
+        //Check X values
+        for (let x = 0; x < gBArrayWidth; x++) {
+            let square = stoppedShapeArray[x][y];
+            if (square === 0 || (typeof square === 'undefined')) {
+                completed = false;
+                break;
+            }
+        }
+        if (completed) {
+            if (startOfDeletion === 0) startOfDeletion = y;
+            rowsToDelete++;
+            for (let i = 0; i < gBArrayWidth; i++) {
+                stoppedShapeArray[i][y] = 0;
+                gameBoardArray[i][y] = 0;
+                let coorX = coordinateArray[i][y].x;
+                let coorY = coordinateArray[i][y].y;
+                ctx.fillStyle = 'white';
+                ctx.fillRect(coorX, coorY, 21, 21);
+            }
+
+
+        }
+    }
+    if (rowsToDelete > 0) {
+        score += 10;
+        ctx.fillStyle = 'white';
+        ctx.fillRect(310, 109, 140, 19);
+        ctx.fillStyle = 'black';
+        ctx.fillText(score.toString(), 310, 127);
+        MoveAllRowsDown(rowsToDelete, startOfDeletion);
+    }
+}
+
+function MoveAllRowsDown(rowsToDelete) {
+    for (var i = startOfDeletion - 1; i >= 0; i--) {
+        for (var x = 0; x < gBArrayWidth; x++) {
+            var y2 = i + rowsToDelete;
+            var square = stoppedShapeArray[x][i];
+            var nextSquare = stoppedShapeArray[x][y2];
+            if (typeof square === 'string') {
+                nextSquare = square;
+                gameBoardArray[x][y2] = 1;
+                stoppedShapeArray[x][y2] = square;
+                let coorX = coordinateArray[x][y2].x;
+                let coorY = coordinateArray[x][y2].y;
+                ctx.fillStyle = nextSquare;
+                ctx.fillRect(coorX, coorY, 21, 21);
+
+                square = 0;
+                gameBoardArray[x][i] = 0;
+                stoppedShapeArray[x][i] = 0;
+                coorX = coordinateArray[x][i].x;
+                coorY = coordinateArray[x][i].y;
+                ctx.fillStyle = 'white';
+                ctx.fillRect(coorX, coorY, 21, 21);
+
+
+            }
+        }
+    }
+}
+
 
