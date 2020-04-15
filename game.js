@@ -80,6 +80,7 @@ function SetupCanvas() {
     // logo = newImage(161,54);
     // logo.onload = DrawLogo;
 
+    // Create Score and Game instructions
     ctx.fillStyle = 'black';
     ctx.font = '21px Arial';
     ctx.fillText("SCORE", 300, 98);
@@ -100,6 +101,8 @@ function SetupCanvas() {
     ctx.fillText("D: Move right", 310, 413);
     ctx.fillText("S: Move down", 310, 438);
     ctx.fillText("E: Rotate", 310, 463);
+
+    // ------------------------------ ADD EVENTLISTENER (KEYPRESS)
 
     document.addEventListener('keydown', HandleKeyPress);
     CreateTetrominos();
