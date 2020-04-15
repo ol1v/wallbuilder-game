@@ -44,6 +44,7 @@ function CreateCoordArray() {
     // 9 pixels from the top
     // 446 total pixels from top to bottom
     for (let y = 9; y <= 446; y += 23) {
+        // from left to right 264 pixels
         for (let x = 11; x <= 264; x += 23) {
             coordinateArray[i][j] = new Coordinates(x, y);
             i++
@@ -54,6 +55,8 @@ function CreateCoordArray() {
 }
 
 function SetupCanvas() {
+    /* get canvas from tetris.html with ID, set size of canvas
+     and allow drawing on canvas*/
     canvas = document.getElementById('my-canvas');
     ctx = canvas.getContext('2d');
     canvas.width = 936;
@@ -95,17 +98,24 @@ function HandleKeyPress(key) {
     if (key.keyCode === 65) {
         // A key pressed - move left
         direction = DIRECTION.LEFT;
-        DeleteTetromino();
-        startX--;
-        // Draw new tetromino
-        DrawTetromino();
+        /* check to see if tetromino hits wall,
+         else: delete and draw at new position*/
+        if (!hittingTheWall()) {
+            DeleteTetromino();
+            startX--;
+            // Draw new tetromino
+            DrawTetromino();
+        }
 
     } else if (key.keyCode === 68) {
         // D key pressed - move right
         direction = DIRECTION.RIGHT;
-        DeleteTetromino();
-        startX++;
-        DrawTetromino();
+        if (!hittingTheWall()) {
+            DeleteTetromino();
+            startX++;
+            DrawTetromino();
+        }
+
     } else if (key.keyCode === 83) {
         // S key pressed - move down
         direction = DIRECTION.DOWN;
@@ -123,6 +133,7 @@ function DeleteTetromino() {
         gameBoardArray[x][y] = 0;
         let coorX = coordinateArray[x][y].x;
         let coorY = coordinateArray[x][y].y;
+
         ctx.fillStyle = 'white';
         ctx.fillRect(coorX, coorY, 21, 21);
 
@@ -146,11 +157,27 @@ function CreateTetrominos() {
     tetrominos.push([[0, 0], [1, 0], [1, 1], [2, 1]]);
 }
 
+// Creates random tetromino (shape and color)
 function CreateTetromino() {
     let randomTetromino = Math.floor(Math.random() * tetrominos.length);
 
     activeTetro = tetrominos[randomTetromino];
     activeTetroColor = tetrominosColors[randomTetromino];
+}
+
+// Check for wallhits
+function hittingTheWall() {
+    for (let i = 0; i < activeTetro.length; i++) {
+        let newX = activeTetro[i][0] + startX;
+        if (newX <= 0 && direction === DIRECTION.LEFT) {
+            // hits left wall
+            return true;
+        } else if (newX >= 11 && direction === DIRECTION.RIGHT) {
+            // hits right wall
+            return true;
+        }
+    }
+    return false;
 }
 
 
