@@ -1,10 +1,10 @@
 body {
     text-align: center;
-    background: black;
+    background: white;
 }
 
 #my-canvas {
-    background: black;
+    background: white;
     margin-left: 10px;
     margin-top: 10px;
 }
