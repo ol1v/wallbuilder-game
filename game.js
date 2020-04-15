@@ -47,6 +47,7 @@ class Coordinates {
 document.addEventListener('DOMContentLoaded', SetupCanvas);
 
 function CreateCoordArray() {
+    let xR = 0, yR = 19;
     let i = 0, j = 0;
     // 9 pixels from the top
     // 446 total pixels from top to bottom
@@ -154,6 +155,9 @@ function HandleKeyPress(key) {
         } else if (key.keyCode === 83) {
             // S key pressed - move down
             MoveTetrominoDown();
+        } else if (key.keyCode === 69) {
+            // E key pressed - rotate
+            rotateTetromino();
         }
     }
 
@@ -168,6 +172,13 @@ function MoveTetrominoDown() {
     }
 
 }
+
+window.setInterval(function () {
+    if (winOrLose != "Game Over") {
+        MoveTetrominoDown();
+    }
+
+}, 1000);
 
 function DeleteTetromino() {
     for (let i = 0; i < activeTetro.length; i++) {
@@ -233,50 +244,51 @@ function CheckForVerticalCollision() {
         let x = square[0] + startX;
         let y = square[1] + startY;
         if (direction === DIRECTION.DOWN) {
-            y++
+            y++;
+            console.log(y);
         }
         // Check for collision
-        if (gameBoardArray[x][y + 1] === 1) {
-            if (typeof stoppedShapeArray[x][y + 1] === 'string') {
-                DeleteTetromino();
-                startY++;
-                DrawTetromino();
-                collision = true;
-                break;
-            }
-            if (y >= 20) {
-                collision = true;
-                break;
-            }
+        //if (gameBoardArray[x][y + 1] === 1) {
+        if (typeof stoppedShapeArray[x][y + 1] === 'string') {
+            DeleteTetromino();
+            startY++;
+            DrawTetromino();
+            collision = true;
+            break;
         }
-        // Check if collision happens at spawntime - Game over
-        if (collision) {
-            if (startY <= 2) {
-                winOrLose = "Game Over";
-                ctx.fillStyle = 'white';
-                ctx.fillRect(310, 242, 140, 30);
-                ctx.fillStyle = 'black';
-                ctx.fillText(winOrLose, 310, 261);
+        if (y >= 20) {
+            collision = true;
+            break;
+        }
+    }
+    // Check if collision happens at spawntime - Game over
+    if (collision) {
+        if (startY <= 2) {
+            winOrLose = "Game Over";
+            ctx.fillStyle = 'white';
+            ctx.fillRect(310, 242, 140, 30);
+            ctx.fillStyle = 'black';
+            ctx.fillText(winOrLose, 310, 261);
 
-            } else {
-                // Put tetromino ontop of collision
-                for (let i = 0; i < tetrominoCopy.length; i++) {
-                    let square = tetrominoCopy[i];
-                    let x = square[0] + startX;
-                    let y = square[1] + startY;
-                    stoppedShapeArray[x][y] = activeTetroColor;
-                }
-                // Spawn new tetromino - game continues
-                CheckForCompletedRows();
-                CreateTetromino();
-                direction = DIRECTION.IDLE;
-                startX = 4;
-                startY = 0;
-                DrawTetromino();
+        } else {
+            // Put tetromino ontop of collision
+            for (let i = 0; i < tetrominoCopy.length; i++) {
+                let square = tetrominoCopy[i];
+                let x = square[0] + startX;
+                let y = square[1] + startY;
+                stoppedShapeArray[x][y] = activeTetroColor;
             }
+            // Spawn new tetromino - game continues
+            CheckForCompletedRows();
+            CreateTetromino();
+            direction = DIRECTION.IDLE;
+            startX = 4;
+            startY = 0;
+            DrawTetromino();
         }
     }
 }
+
 
 function checkForHorizontalCollision() {
     // Create copy of tetromino 
@@ -369,4 +381,40 @@ function MoveAllRowsDown(rowsToDelete) {
     }
 }
 
+function rotateTetromino() {
+    let newRotation = new Array();
+    let tetrominoCopy = activeTetro;
+    let actTetrominoBU;
+    for (let i = 0; i < tetrominoCopy.length; i++) {
+        actTetrominoBU = [...activeTetromino];
+        let x = tetrominoCopy[i][0];
+        let y = tetrominoCopy[i][1];
+        let newX = (GetLastSquareX() - y);
+        let newY = X;
+        newRotation.push([newX, newY]);
+
+    }
+    DeleteTetromino();
+    try {
+        activeTetro = newRotation;
+        DrawTetromino();
+    }
+    catch (e) {
+        if (e instanceof TypeError) {
+            activeTetro = actTetrominoBU;
+            DeleteTetromino();
+            DrawTetromino();
+        }
+    }
+}
+
+function GetLastSquareX() {
+    let lastX = 0;
+    for (let i = 0; i < activeTetro.length; i++) {
+        let square = activeTetro[i];
+        if (square[0] > lastX)
+            lastX = square[0];
+    }
+    return lastX;
+}
 
