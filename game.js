@@ -77,10 +77,11 @@ function SetupCanvas() {
 
     ctx.strokeStyle = 'black';
     ctx.strokeRect(8, 8, 280, 462);
-
-    // logo = newImage(161,54);
-    // logo.onload = DrawLogo;
-
+    /*
+        let logo = newImage(161, 54);
+        logo.onload = DrawLogo;
+        logo.src = "DONALDTRUMP.png";
+    */
     // Create Score and Game instructions
     ctx.fillStyle = 'black';
     ctx.font = '21px Arial';
