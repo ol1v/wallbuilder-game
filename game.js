@@ -17,7 +17,7 @@ let coordinateArray = [...Array(gBArrayHeight)].map(e => Array(gBArrayWidth)
 let activeTetro = [[1, 0], [0, 1], [1, 1], [2, 1]]
 
 let tetrominos = [];
-let tetrominosColors = ['purple', 'cyan', 'blue', 'yellow', 'orange', 'green', 'red'];
+let tetrominosColors = ['black', 'grey', 'navy', 'blue', 'orange', 'green', 'red'];
 
 let activeTetroColor;
 //gameboard
@@ -26,6 +26,9 @@ let gameBoardArray = [...Array(gBArrayHeight)].map(e => Array(gBArrayWidth)
 
 let stoppedShapeArray = [...Array(gBArrayHeight)].map(e => Array(gBArrayWidth)
     .fill(0));
+
+// Donald Trump
+let donQuoute = 'Make Murica GREAT again! HEHEHEHEHHEHEH';
 
 let DIRECTION = {
     IDLE: 0,
@@ -62,9 +65,17 @@ function CreateCoordArray() {
     }
 }
 
+
 function SetupCanvas() {
     /* get canvas from tetris.html with ID, set size of canvas
      and allow drawing on canvas*/
+    try {
+        document.body.querySelector('#quotes').innerHTML = `${localStorage.getItem('quote')}`
+    } catch (err) {
+        console.log(err);
+        document.body.querySelector('#quotes').innerHTML = "";
+    }
+
     canvas = document.getElementById('my-canvas');
     ctx = canvas.getContext('2d');
     canvas.width = 936;
@@ -78,31 +89,52 @@ function SetupCanvas() {
     ctx.strokeStyle = 'black';
     ctx.strokeRect(8, 8, 280, 462);
     /*
-        let logo = newImage(161, 54);
-        logo.onload = DrawLogo;
-        logo.src = "DONALDTRUMP.png";
-    */
+    let logo = newImage(161, 54);
+    logo.onload = DrawLogo;
+    logo.src = "DONALDTRUMP.png";
+    document.body.appendChild(logo);
+*/
+    // setup dumb button for fetching quotes
+    //button
+    let btn = document.createElement('input');
+    btn.setAttribute('type', 'button')
+    btn.setAttribute('value', 'Generate Bullshit');
+    btn.addEventListener('click', getQuote);
+
+    // div
+    let myDiv = document.createElement('div');
+    myDiv.setAttribute('id', 'presentTxt');
+    // textnode for div
+    let txt = document.createTextNode('HeJ');
+    myDiv.appendChild(txt);
+    // append to body
+    document.body.appendChild(myDiv);
+    document.body.appendChild(btn);
+
     // Create Score and Game instructions
     ctx.fillStyle = 'black';
     ctx.font = '21px Arial';
-    ctx.fillText("SCORE", 300, 98);
+    ctx.fillText("DONALD SAYS:", 300, 50);
 
-    ctx.strokeRect(300, 107, 161, 24);
-    ctx.fillText(score.toString(), 310, 127);
-    ctx.fillText("LEVEL", 300, 157);
+    ctx.font = '10px Arial';
+    ctx.strokeRect(300, 52, 161, 80);
+    ctx.fillText(donQuoute, 310, 70);
+
+    ctx.font = '21px Arial';
+    ctx.fillText("SCORE", 300, 157);
     ctx.strokeRect(300, 171, 161, 24);
-    ctx.fillText(level.toString(), 310, 190);
+    //ctx.fillText(`${score.toString()}`, 310, 190);
 
-    ctx.fillText("WIN / LOSE", 300, 221);
+    ctx.fillText("WIN/LOSE", 300, 221);
     ctx.fillText(winOrLose, 310, 261);
     ctx.strokeRect(300, 232, 161, 95);
-    ctx.fillText("CONTROLS", 300, 354);
+    ctx.fillText("HIGHSCORE", 300, 354);
     ctx.strokeRect(300, 366, 161, 104);
     ctx.font = '19px Arial';
-    ctx.fillText("A: Move left", 310, 388);
-    ctx.fillText("D: Move right", 310, 413);
-    ctx.fillText("S: Move down", 310, 438);
-    ctx.fillText("E: Rotate", 310, 463);
+    ctx.fillText(`${score.toString()}`, 310, 388);
+    ctx.fillText("2: Move right", 310, 413);
+    ctx.fillText("3: Move down", 310, 438);
+    ctx.fillText("4: Rotate", 310, 463);
 
     // ------------------------------ ADD EVENTLISTENER (KEYPRESS)
 
@@ -127,6 +159,7 @@ function DrawTetromino() {
         // draw tetromino
         ctx.fillStyle = activeTetroColor;
         ctx.fillRect(coorX, coorY, 21, 21);
+
     }
 }
 
@@ -158,7 +191,9 @@ function HandleKeyPress(key) {
             MoveTetrominoDown();
         } else if (key.keyCode === 69) {
             // E key pressed - rotate
+            getQuote();
             rotateTetromino();
+
         }
     }
 
@@ -347,13 +382,15 @@ function CheckForCompletedRows() {
         score += 10;
         ctx.fillStyle = 'white';
         ctx.fillRect(310, 109, 140, 19);
+
         ctx.fillStyle = 'black';
-        ctx.fillText(score.toString(), 310, 127);
+        ctx.fillText(score.toString(), 310, 190);
         MoveAllRowsDown(rowsToDelete, startOfDeletion);
     }
 }
 
 function MoveAllRowsDown(rowsToDelete) {
+    getQuote();
     for (var i = startOfDeletion - 1; i >= 0; i--) {
         for (var x = 0; x < gBArrayWidth; x++) {
             var y2 = i + rowsToDelete;
@@ -387,7 +424,7 @@ function rotateTetromino() {
     let tetrominoCopy = activeTetro;
     let actTetrominoBU;
     for (let i = 0; i < tetrominoCopy.length; i++) {
-        actTetrominoBU = [...activeTetromino];
+        actTetrominoBU = [...activeTetro];
         let x = tetrominoCopy[i][0];
         let y = tetrominoCopy[i][1];
         let newX = (GetLastSquareX() - y);
@@ -419,3 +456,25 @@ function GetLastSquareX() {
     return lastX;
 }
 
+function getQuote() {
+    fetch('https://www.tronalddump.io/random/quote/', {
+        headers: {
+            'Content-type': 'application/json'
+        }
+    })
+        .then(response => {
+            console.log('Loading...')
+            return response.json()
+        })
+        .then(result => {
+            console.log(result.value);
+            localStorage.clear();
+            localStorage.setItem('quote', result.value);
+            document.body.querySelector('#quotes').innerHTML = "";
+            let outQ = document.body.querySelector('#quotes');
+
+            let txtQ = document.createTextNode(result.value);
+            outQ.appendChild(txtQ);
+            donQuoute = result.value;
+        })
+}
