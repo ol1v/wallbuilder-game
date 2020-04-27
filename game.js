@@ -28,7 +28,7 @@ let stoppedShapeArray = [...Array(gBArrayHeight)].map(e => Array(gBArrayWidth)
     .fill(0));
 
 // Donald Trump
-let donQuoute = 'Make Murica GREAT again! HEHEHEHEHHEHEH';
+let donQuoute = `USE A,S,D keys to move`;
 
 let DIRECTION = {
     IDLE: 0,
@@ -67,15 +67,15 @@ function CreateCoordArray() {
 
 
 function SetupCanvas() {
-    /* get canvas from tetris.html with ID, set size of canvas
-     and allow drawing on canvas*/
+
     try {
         document.body.querySelector('#quotes').innerHTML = `${localStorage.getItem('quote')}`
     } catch (err) {
         console.log(err);
         document.body.querySelector('#quotes').innerHTML = "";
     }
-
+    /* get canvas from tetris.html with ID, set size of canvas
+     and allow drawing on canvas*/
     canvas = document.getElementById('my-canvas');
     ctx = canvas.getContext('2d');
     canvas.width = 936;
@@ -114,7 +114,7 @@ function SetupCanvas() {
     // Create Score and Game instructions
     ctx.fillStyle = 'black';
     ctx.font = '21px Arial';
-    ctx.fillText("DONALD SAYS:", 300, 50);
+    ctx.fillText("INFO:", 300, 50);
 
     ctx.font = '10px Arial';
     ctx.strokeRect(300, 52, 161, 80);
@@ -131,10 +131,10 @@ function SetupCanvas() {
     ctx.fillText("HIGHSCORE", 300, 354);
     ctx.strokeRect(300, 366, 161, 104);
     ctx.font = '19px Arial';
-    ctx.fillText(`${score.toString()}`, 310, 388);
-    ctx.fillText("2: Move right", 310, 413);
-    ctx.fillText("3: Move down", 310, 438);
-    ctx.fillText("4: Rotate", 310, 463);
+    ctx.fillText(`1. H1ll4RY`, 310, 388);
+    ctx.fillText("2. BERNIE1910", 310, 413);
+    ctx.fillText("3. ZERObama", 310, 438);
+    ctx.fillText("4. Greta.T", 310, 463);
 
     // ------------------------------ ADD EVENTLISTENER (KEYPRESS)
 
